@@ -24,20 +24,21 @@ def create_app(test_config=None):
   setup_db(app)
   CORS(app)
 
-  # CORS Headers 
+  # CORS Headers
   @app.after_request
   def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-  
+
   @app.route('/books')
   def retrieve_books():
     selection = Book.query.order_by(Book.id).all()
     current_books = paginate_books(request, selection)
+    print(len(current_books))
     if len(current_books) == 0:
-      abort(404)
+          abort(404)
     return jsonify({
       'success': True,
       'books': current_books,
@@ -72,7 +73,7 @@ def create_app(test_config=None):
       return jsonify({
         'success': True,
       })
-      
+
     except:
       abort(400)
 
@@ -123,22 +124,21 @@ def create_app(test_config=None):
     except:
       abort(422)
 
-  # @TODO: Review the above code for route handlers. 
-  #        Pay special attention to the status codes used in the aborts since those are relevant for this task! 
+  # @TODO: Review the above code for route handlers.
+  #        Pay special attention to the status codes used in the aborts since those are relevant for this task!
 
-  # @TODO: Write error handler decorators to handle AT LEAST status codes 400, 404, and 422. 
-    
+  # @TODO: Write error handler decorators to handle AT LEAST status codes 400, 404, and 422.
+
   # TEST: Practice writing curl requests. Write some requests that you know will error in expected ways.
   #       Make sure they are returning as expected. Do the same for other misformatted requests or requests missing data.
-  #       If you find any error responses returning as HTML, write new error handlers for them. 
-    @app.errorhandler(404)
-    def errornotfound(error):
-        return jsonify({
-        'success': False,
-        'message' : 'not found',
-        'error': 404
-        })
+  #       If you find any error responses returning as HTML, write new error handlers for them.
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "resource not found"
+    }), 404
+
 
   return app
-
-    
