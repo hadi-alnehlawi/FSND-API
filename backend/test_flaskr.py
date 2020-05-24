@@ -58,7 +58,21 @@ class BookTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
 
+    # def test_post(self):
+    #     res = self.client().post('/books', json={'title':'test_title','author':'test_author','rating': 1})
+    #     data = json.loads(res.data)
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertEqual(data['success'], True)
+    #     self.assertTrue(data['created'])
 
+    def test_post_with_search(self):
+        response = self.client().post('/books/search',json={'title':'test4_search_title','author':'test4_search_uthor','rating': 1})
+        data = json.loads(response.data)
+        new_book = Book.query.filter_by(id=data['new_book_id']).first()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['new_book'], new_book.format())
+        self.assertEqual(data['total_books'],len(Book.query.all()))
 
 
 
